@@ -93,6 +93,11 @@ def main():
             ok = db.delete_task(task_id)
             print("Deleted.\n" if ok else "Task ID not found.\n")
 
+        elif choice == "6":
+            tasks = db.list_due_soon(7)
+            print_tasks(tasks)
+
+
         elif choice == "0":
             print("Goodbye!")
             break

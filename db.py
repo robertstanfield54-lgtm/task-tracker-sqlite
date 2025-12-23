@@ -64,6 +64,25 @@ def list_tasks(show_all: bool = True) -> List[Dict[str, Any]]:
         rows = cur.fetchall()
         return [dict(r) for r in rows]
 
+def list_due_soon(days: int = 7) -> List[Dict[str, Any]]:
+    """
+    List open tasks due within the next N days.
+    due_date must be stored as YYYY-MM-DD.
+    """
+    with get_connection() as conn:
+        cur = conn.execute(
+            """
+            SELECT id, title, due_date, priority, completed, created_at
+            FROM tasks
+            WHERE completed = 0
+              AND due_date IS NOT NULL
+              AND date(due_date) <= date('now', ?)
+            ORDER BY date(due_date) ASC, priority ASC, id ASC;
+            """,
+            (f"+{days} days",),
+        )
+        rows = cur.fetchall()
+        return [dict(r) for r in rows]
 
 def mark_complete(task_id: int) -> bool:
     with get_connection() as conn:
